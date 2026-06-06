@@ -33,5 +33,5 @@ puts ""
 puts "Decidiu? #{mt.processar(entrada)}"
 puts "Fita: #{mt.fita}"
 
-#Cenário certo: scscsccscc
-#Cenário errado: scsccsc
+#Cenário certo: scscsccsccscccsccc
+#Cenário errado: scscsccsccc
