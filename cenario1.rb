@@ -32,3 +32,6 @@ puts "Entrada completa da MTU: #{entrada}"
 puts ""
 puts "Decidiu? #{mt.processar(entrada)}"
 puts "Fita: #{mt.fita}"
+
+#Cenário certo: scscsccscc
+#Cenário errado: scsccsc
