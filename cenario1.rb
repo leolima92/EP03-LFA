@@ -1,8 +1,8 @@
 require_relative 'mtu'
 
-# Cenário 1: MT para a^n b^n, conforme pedido no enunciado
+# Cenário 1: MT que reconhece a Linguagem Regular a*b*
 #
-# Agora a máquina e a cadeia de entrada ficam em arquivos separados:
+# A máquina e a cadeia de entrada ficam em arquivos separados:
 # - cenarios/cenario1_maquina.txt  -> contém somente as transições codificadas da MT
 # - cenarios/cenario1_entrada.txt  -> contém somente a cadeia de entrada codificada
 #
@@ -20,7 +20,7 @@ entrada = maquina + "#" + cadeia
 mt = MTU.new
 
 puts "=========================================="
-puts " Cenário 1: MT para a^n b^n"
+puts " Cenário 1: Linguagem Regular a*b*"
 puts " Máquina: cenarios/cenario1_maquina.txt"
 puts " Entrada: cenarios/cenario1_entrada.txt"
 puts "=========================================="
@@ -32,3 +32,6 @@ puts "Entrada completa da MTU: #{entrada}"
 puts ""
 puts "Decidiu? #{mt.processar(entrada)}"
 puts "Fita: #{mt.fita}"
+
+#Cenário certo: scscsccscc
+#Cenário errado: scsccsc

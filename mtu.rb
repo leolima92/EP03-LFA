@@ -83,13 +83,13 @@ class MTU
       # Próximo char pode ser 'f' (nova regra) ou '#' (início da cadeia)
       in [:fim_regra, "f"]
         # Salva a transição lida
-        transicoes << {
-          estado_atual: estado_leitura,
-          simbolo_lido: simbolo_leitura,
-          estado_destino: estado_destino,
-          simbolo_escrito: simbolo_escrita,
-          movimento: movimento
-        }
+        transicoes << [
+          estado_leitura,
+          simbolo_leitura,
+          estado_destino,
+          simbolo_escrita,
+          movimento
+        ]
         puts "Transição lida: (#{estado_leitura}, #{simbolo_leitura}) -> (#{estado_destino}, #{simbolo_escrita}, #{movimento})"
 
         # Começa a ler a próxima regra
@@ -101,13 +101,13 @@ class MTU
 
       in [:fim_regra, "#"]
         # Salva a última transição
-        transicoes << {
-          estado_atual: estado_leitura,
-          simbolo_lido: simbolo_leitura,
-          estado_destino: estado_destino,
-          simbolo_escrito: simbolo_escrita,
-          movimento: movimento
-        }
+        transicoes << [
+          estado_leitura,
+          simbolo_leitura,
+          estado_destino,
+          simbolo_escrita,
+          movimento
+        ]
         puts "Transição lida: (#{estado_leitura}, #{simbolo_leitura}) -> (#{estado_destino}, #{simbolo_escrita}, #{movimento})"
         puts "============================"
         puts "Total de transições: #{transicoes.length}"
@@ -152,7 +152,9 @@ class MTU
 
   def submaquina(transicoes)
     # Estado inicial: o estado_atual da primeira transição
-    estado_mt = transicoes[0][:estado_atual]
+    # Cada transição agora é um array:
+    # [estado_atual, simbolo_lido, estado_destino, simbolo_escrito, movimento]
+    estado_mt = transicoes[0][0]
     @cursor_leitura = 0
 
     # Adiciona branco no final da fita de trabalho
@@ -168,21 +170,31 @@ class MTU
     while passos < max_passos
       simbolo_atual = @fita_cadeia[@cursor_leitura] || "_"
 
-      # Busca transição linearmente (sem hash)
+      # Busca a transição percorrendo a lista uma por uma
+      # Não usa tabela e não usa hash
       resultado = nil
       i = 0
+
       while i < transicoes.length
         t = transicoes[i]
-        if comparar(t[:estado_atual], estado_mt) && comparar(t[:simbolo_lido], simbolo_atual)
+
+        # t[0] = estado_atual
+        # t[1] = simbolo_lido
+        # t[2] = estado_destino
+        # t[3] = simbolo_escrito
+        # t[4] = movimento
+        if comparar(t[0], estado_mt) && comparar(t[1], simbolo_atual)
           resultado = t
           break
         end
+
         i += 1
       end
 
       if resultado.nil?
         puts "Sem transição para (#{estado_mt}, #{simbolo_atual})"
         puts ""
+
         if estado_aceitacao?(estado_mt)
           puts "=========================================="
           puts ">>> ACEITA! Estado final: #{estado_mt} <<<"
@@ -196,19 +208,21 @@ class MTU
         end
       end
 
-      puts "Passo #{passos + 1}: (#{estado_mt}, #{simbolo_atual}) -> (#{resultado[:estado_destino]}, #{resultado[:simbolo_escrito]}, #{resultado[:movimento]})"
+      puts "Passo #{passos + 1}: (#{estado_mt}, #{simbolo_atual}) -> (#{resultado[2]}, #{resultado[3]}, #{resultado[4]})"
 
       # Aplica a transição
-      @fita_cadeia[@cursor_leitura] = resultado[:simbolo_escrito]
-      estado_mt = resultado[:estado_destino]
+      @fita_cadeia[@cursor_leitura] = resultado[3]
+      estado_mt = resultado[2]
 
-      if resultado[:movimento] == "d"
+      if resultado[4] == "d"
         @cursor_leitura += 1
+
         if @cursor_leitura >= @fita_cadeia.length
           @fita_cadeia << "_"
         end
       else
         @cursor_leitura -= 1
+
         if @cursor_leitura < 0
           @fita_cadeia.unshift("_")
           @cursor_leitura = 0
